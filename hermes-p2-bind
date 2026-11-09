@@ -1,0 +1,30 @@
+#!/bin/sh
+
+set -eu
+
+device=${1:?missing HID device name}
+
+case "$device" in
+	0003:1B80:B51D.*) ;;
+	*) exit 0 ;;
+esac
+
+device_path="/sys/bus/hid/devices/$device"
+generic_driver="/sys/bus/hid/drivers/hid-generic"
+hermes_driver="/sys/bus/hid/drivers/hid_gamdias_hermes_p2"
+
+[ -e "$device_path" ] || exit 0
+/sbin/modprobe hid_gamdias_hermes_p2
+
+if [ -L "$device_path/driver" ]; then
+	driver=$(readlink -f "$device_path/driver")
+	if [ "$driver" = "$hermes_driver" ]; then
+		exit 0
+	fi
+	if [ "$driver" != "$generic_driver" ]; then
+		exit 0
+	fi
+	printf '%s' "$device" > "$generic_driver/unbind"
+fi
+
+printf '%s' "$device" > "$hermes_driver/bind"
