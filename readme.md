@@ -15,6 +15,10 @@ existing HID drivers unchanged.
 - A compiler and `make`.
 - Root privileges for installation and removal.
 
+## Credit
+I did most of the prompting, testing and debugging and GitHub Copilot wrangled
+the all sorts of different models to do most of the coding.
+
 ## Build and install
 
 ```sh
